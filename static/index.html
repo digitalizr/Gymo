@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gym Activity Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .machine-buttons {
+            margin: 20px 0;
+        }
+        .machine-buttons button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        .form-section {
+            margin-top: 20px;
+        }
+        .form-section input[type=number] {
+            width: 100px;
+        }
+        .form-section span {
+            margin-left: 10px;
+        }
+        .success-message {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gym Activity Tracker</h1>
+    <p id="currentDate"></p>
+    <div class="machine-buttons">
+        <button onclick="window.location.href='/machine/1'">Machine 1</button>
+        <button onclick="window.location.href='/machine/2'">Machine 2</button>
+        <!-- Add more buttons for additional machines as needed -->
+    </div>
+    <div class="form-section">
+        <form id="gymForm">
+            <label for="machine">Select Machine:</label>
+            <select id="machine" onchange="clearForm()">
+                <option value="1">Machine 1</option>
+                <option value="2">Machine 2</option>
+                <!-- Add more machines as needed -->
+            </select><br><br>
+            <label for="set1">Set 1 Weight:</label>
+            <input type="number" id="set1" required><span>kg</span><br><br>
+            <label for="set2">Set 2 Weight:</label>
+            <input type="number" id="set2" required><span>kg</span><br><br>
+            <label for="set3">Set 3 Weight:</label>
+            <input type="number" id="set3" required><span>kg</span><br><br>
+            <button type="button" id="submitBtn" onclick="submitForm()">Submit</button>
+        </form>
+    </div>
+    <div class="success-message" id="successMessage">
+        <p>Successfully logged!</p>
+        <button type="button" onclick="editEntry()">Edit</button>
+    </div>
+
+    <script>
+        document.getElementById('currentDate').innerText = new Date().toLocaleString('en-US', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        async function submitForm() {
+            const machine = document.getElementById('machine').value;
+            const set1 = document.getElementById('set1').value;
+            const set2 = document.getElementById('set2').value;
+            const set3 = document.getElementById('set3').value;
+
+            const response = await fetch('/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ machine, set1, set2, set3 })
+            });
+
+            if (response.ok) {
+                document.getElementById('submitBtn').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+            } else {
+                alert('Error submitting data');
+            }
+        }
+
+        function editEntry() {
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function clearForm() {
+            document.getElementById('gymForm').reset();
+            editEntry();
+        }
+    </script>
+</body>
+</html>
